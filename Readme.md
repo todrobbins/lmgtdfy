@@ -4,7 +4,7 @@ LMGTDFY is a web-based utility to catalog all open data file formats found on a 
 
 This is intended for people who need to inventory all data files on a given domain name—these are generally employees of state and municipal government, who are creating an open data repository, and performing the initial step of figuring out what data is already being emitted by their government.
 
-LMGTDFY powers [U.S. Open Data’s LMGTDFY site](http://lmgtdfy.usopendata.org/), but anybody can install the software and use it to create their own inventory. You might want to do this if you have more than 300 data files on your site. U.S. Open Data’s LMGTDFY site caps the number of results at 300, in order to avoid winding up with an untenably large invoice for using Bing’s API. ([Microsoft allows 5,000 searches/month for free](https://datamarket.azure.com/dataset/bing/search).)
+LMGTDFY powers [U.S. Open Data’s LMGTDFY site](http://lmgtdfy.usopendata.org/), but anybody can install the software and use it to create their own inventory. You might want to do this if you have more than 2,000 data files on your site. U.S. Open Data’s LMGTDFY site caps the number of results at 2,000, in order to avoid winding up with an untenably large invoice for using Bing’s API. ([Microsoft allows 5,000 searches/month for free](https://datamarket.azure.com/dataset/bing/search), but has kindly provided U.S. Open Data with a substantial sponsorship for this service, in the form of API credits.)
 
 ## Installation
 
@@ -64,10 +64,10 @@ gunicorn -D -p gunicorn.pid --access-logfile access.log --error-logfile error.lo
 
 ### Launch Celery
 
-This will manage the search API requests. Use screen to run this `screen` to keep it running in the background, and reattach to Celery to stop it with Ctrl-C.
+This will manage the search API requests. Use screen to run this `screen` to keep it running in the background, and reattach to Celery to stop it with Ctrl-C. The `--autoscale` option specifies how many (and how few) copies of Celery you want running at one time—basically, how many people who think are going to be trying to request data on your site at once. `10,2` means that it allows a maximum of 10, and always has at least 2 instances running.
 
 ```
-celery -A opendata worker -l info
+celery -A opendata worker -l info --autoscale=10,2
 ```
 
 ### Proxy it through Apache/Nginx
@@ -94,8 +94,8 @@ kill `cat gunicorn.pid`
 
 ### Finally
 
-You'll probably want to set up Gunicorn and Celery to run continuously, and to start and stop along with your server. Here are [instructions on daemonizing Gunicorn](http://gunicorn-docs.readthedocs.org/en/latest/deploy.html) and [instructions on daemonizing Celery](http://celery.readthedocs.org/en/latest/tutorials/daemonizing.html).
+You'll probably want to set up Gunicorn and Celery to run continuously, and to start and stop along with your server. Here are [instructions on daemonizing Gunicorn](https://gunicorn-docs.readthedocs.org/en/latest/deploy.html) and [instructions on daemonizing Celery](https://celery.readthedocs.org/en/latest/tutorials/daemonizing.html).
 
 ## Colophon
 
-This tool was made by [Ted Han](/knowtheory) and [SVSG](http://svsg.co/) for [U.S. Open Data](https://usopendata.org/).
+This tool was made by [Ted Han](https://github.com/knowtheory) and [SVSG](http://svsg.co/) for [U.S. Open Data](https://usopendata.org/).
